@@ -47,3 +47,4 @@ row,device,wireColor,signalType,direction,destination
 46,Stepper A2,Gray-C6,Digital steps/dir,Output,Idle Air Control Valve
 47,Fuel Pump,Gray-C7,12v Power,Output,Fuel Pump Relay
 48,Power Ground,Gray-C8,Power Ground,Both,Batt Ground
+49,boost controller,orange c99,digital,output,boost solenoid

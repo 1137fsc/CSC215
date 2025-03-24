@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>  // for sorting of the rows
 using namespace std;
 // I will be keeping main at the top of my program, so I will prototype my functions so that they can come below main
 
@@ -744,6 +745,7 @@ void pinMappingMenu() {                  // my menu for going through pin mappin
 	int choice;
 
 	do {                                          //my do-while for the switch case. prompt user, get instructions to run a specific case. handle stupid entries. 
+		
 		cout << "\n---- ECU Pin Mapping ----\n"; 
 		cout << "1. Enter Engine Harness\n";
 		cout << "2. Enter Car Harness\n";
@@ -782,6 +784,7 @@ loadCSV(pinData, filename);                  // cont. from above... create a lis
 		cout << "2. Edit Existing Data\n";
 		cout << "3. Display Current Data\n";
 		cout << "4. Save & Exit\n";
+		cout << "5. Exit\n";
 		cout << "Enter choice: ";
 
 		if (!(cin >> choice)) {
@@ -797,13 +800,73 @@ loadCSV(pinData, filename);                  // cont. from above... create a lis
 		//so call "enter harness" it calls handle component select parameter harness csv, then they go to the menu to select what they want to do with it
 		//where they chose say enter new data, and it calls the function with parameter of "pindata", and returns whatever filename from handle component selection
 		switch (choice) {
-		case 1: enterPinData(pinData, filename); break;          
-		case 2: editPinData(pinData, filename); break;
-		case 3: displayPinData(pinData, filename); break;
-		case 4: saveCSV(pinData, filename); cout << "Data saved.\n"; break;
+		case 1: // enterPinData(pinData, filename); 
+			// Pass pinData by reference, no need to reload CSV here
+		{
+			PinMapping entry;
+			cout << "\n Enter Row Number: ";
+			if (!(cin >> entry.row)) {
+				cin.clear();
+				cin.ignore(100, '\n');
+				cout << "Invalid row number! Please enter a number.\n";
+				continue;
+			}
+
+			// Check if row exists
+			if (rowExists(pinData, entry.row)) {
+				cout << "Row " << entry.row << " already exists. Use Edit option instead.\n";
+				continue;
+			}
+			cin.ignore(); // Clear the newline
+
+			cout << "Enter Device Name: ";
+			getline(cin, entry.device);
+
+			cout << "Enter Wire Color: ";
+			getline(cin, entry.wireColor);
+
+			cout << "Enter Signal Type: ";
+			getline(cin, entry.signalType);
+
+			cout << "Enter Direction (Input/Output/Power): ";
+			getline(cin, entry.direction);
+
+			cout << "Enter Destination: ";
+			getline(cin, entry.destination);
+
+			pinData.push_back(entry);
+			cout << "Data added successfully!\n";
+		}
+			break;          
+		case 2: editPinData(pinData, filename); 
+			break;
+		case 3: //displayPinData(pinData, filename); 
+			if (pinData.empty()) {
+				cout << "\n No data in " << filename << ".\n";
+			}
+			else {
+				cout << "\n Row | Device | Wire Color | Signal Type | Direction | Destination \n";
+				cout << "---------------------------------------------------------------------\n";
+				for (const auto& entry : pinData) {
+					cout << entry.row << " | "
+						<< entry.device << " | "
+						<< entry.wireColor << " | "
+						<< entry.signalType << " | "
+						<< entry.direction << " | "
+						<< entry.destination << "\n";
+				}
+			}
+			break;
+			break;
+		case 4: saveCSV(pinData, filename); 
+			cout << "Data saved.\n";
+			break;
+		case 5: 
+			cout << "exiting\n";
+			break;
 		default: cout << "Invalid choice! Enter 1-4.\n";
 		}
-	} while (choice != 4);
+	} while (choice != 4 && choice != 5); // while (choice != 4 || 5);
 }
 
 //enter data. This is where we will enter the pin data. So this needs to be the vector for pin mapping
@@ -812,8 +875,10 @@ loadCSV(pinData, filename);                  // cont. from above... create a lis
 //also passing the string filename that came from uptop so we are editting the correct csv. 
 
 void enterPinData(vector<PinMapping>& pinData, string filename) {    //pass the vector pin mapping as a reference, pass the name of the csv. 
+	loadCSV(pinData, filename);  // Added this line to keep previously saved entries
+
 	PinMapping entry;												//create a row by nymber
-	cout << "Enter Row Number: ";
+	cout << "\n Enter Row Number: ";
 	cin >> entry.row;
 
 	//so what happens if you call a row that already exists? is this going to wipe it?
@@ -927,7 +992,68 @@ Here, row[0] always stores the roll number of a student, so compare row[0] with 
 display the details of the student and break from the loop.*/
 	string line;
 
-	getline(file, line);                                   //kept crashing because of the header row. so lets cheat and get the first line first and do nothing with it. ha. 
+	getline(file, line);       
+	
+	// Skip header if it exists
+	if (getline(file, line)) {
+		// If the first line contains header info, skip it
+		// Otherwise, parse it as data
+		if (line.find("row") != string::npos ||
+			line.find("device") != string::npos ||
+			line.find("Row") != string::npos) {
+			// This was a header line, continue to the data
+		}
+		else {
+			// This was data, process it
+			stringstream ss(line);
+			PinMapping entry;
+			string temp;
+
+			getline(ss, temp, ',');
+			try {
+				entry.row = stoi(temp); // Convert only the row part to integer
+			}
+			catch (const exception& e) {
+				cout << "Error parsing row number: " << temp << endl;
+				entry.row = 0;
+			}
+			getline(ss, entry.device, ',');
+			getline(ss, entry.wireColor, ',');
+			getline(ss, entry.signalType, ',');
+			getline(ss, entry.direction, ',');
+			getline(ss, entry.destination);  // Get the rest of the line
+
+			pinData.push_back(entry);
+		}
+	}
+
+	// Process the rest of the file
+	while (getline(file, line)) {
+		stringstream ss(line);
+		PinMapping entry;
+		string temp;
+
+		getline(ss, temp, ',');
+		try {
+			entry.row = stoi(temp); // Convert only the row part to integer
+		}
+		catch (const exception& e) {
+			cout << "Error parsing row number: " << temp << endl;
+			entry.row = 0;
+		}
+		getline(ss, entry.device, ',');
+		getline(ss, entry.wireColor, ',');
+		getline(ss, entry.signalType, ',');
+		getline(ss, entry.direction, ',');
+		getline(ss, entry.destination);  // Get the rest of the line
+
+		pinData.push_back(entry);
+	}
+
+	file.close();
+}
+
+//kept crashing because of the header row. so lets cheat and get the first line first and do nothing with it. ha. 
 	//string word;   //didnt use this from the example 
 	//string temp;
 
@@ -936,7 +1062,7 @@ display the details of the student and break from the loop.*/
 		PinMapping entry;
 		getline(s, word, ',');
 	}
-	*/
+	
 
 	// so if they type in "map sensor" for the decive, then I need to seperate the words, not just seperate by comma. so the s(line) thing doesnt work
 	// I found this https://cppscripts.com/getline-delimiter-cpp... so each word goes on a new line.... so I can make my whole struct  "split sentence" or is it string sentence. dunno. 
@@ -947,7 +1073,7 @@ display the details of the student and break from the loop.*/
 		//okay if the row is a string when I pull it in, how do I make it an int so we know what row this is?
 
 		//bullshiiii doesnt work. it overwrites the whole thing getline(ss, line, ','); entry.row = stoi(line);   //ah ha!! https://www.geeksforgeeks.org/convert-string-to-int-in-cpp/?ref=ml_lbp
-		getline(ss, temp, ','); entry.row = stoi(line);
+		getline(ss, temp, ','); entry.row = stoi(temp);
 		getline(ss, entry.device, ',');
 		getline(ss, entry.wireColor, ',');
 		getline(ss, entry.signalType, ',');
@@ -955,6 +1081,8 @@ display the details of the student and break from the loop.*/
 		getline(ss, entry.destination, ',');
 		pinData.push_back(entry);
 	}
+	cout << " \n";
+
 	file.close();                                // close the file after i get the info. or it hangs everything up. 
 }
 
@@ -970,7 +1098,36 @@ Inherits the functions put(),  write(), seekp() and tellp() functions from the o
 // so loop trhough each and write it. 
 
 void saveCSV(vector<PinMapping>& pinData, string filename) {
+	// Reload the file again to get all current entries
+	/*vector<PinMapping> existingData;
+	loadCSV(existingData, filename);
+
+	// Merge new data by row number (overwrite if same row, append otherwise)
+	for (const auto& newRow : pinData) {
+		auto it = std::find_if(existingData.begin(), existingData.end(), [&](const PinMapping& p) {
+			return p.row == newRow.row;
+			});
+
+		if (it != existingData.end()) {
+			*it = newRow; // Overwrite existing row
+		}
+		else {
+			existingData.push_back(newRow); // Add new row
+		}
+	}
+
+	// this overwrites all entries. so neeed to load all first, then add the file on the bottom
+	//ifstream file(filename);
+	
 	ofstream file(filename);
+
+	//ofstream file(filename, ios::trunc); // make it overwrite with the full dataset
+
+	if (!file.is_open()) {
+		cout << "Failed to open file for saving: " << filename << "\n";
+		return;
+	}
+
 	//for (size_t i = 0; i < pinData.size(); ++i) {
 	//	PinMapping& entry = pinData[i];
 	//}
@@ -986,6 +1143,34 @@ void saveCSV(vector<PinMapping>& pinData, string filename) {
 	}
 	file.close();
 	//the only thing I see here is if there are two words in the entry... i dunno how its going to work. 
+}*/
+	ofstream file(filename);
+
+	if (!file.is_open()) {
+		cout << "Failed to open file for saving: " << filename << "\n";
+		return;
+	}
+
+	// Sort data by row number
+	sort(pinData.begin(), pinData.end(), [](const PinMapping& a, const PinMapping& b) {
+		return a.row < b.row;
+		});
+
+	// Write header
+	file << "row,device,wireColor,signalType,direction,destination\n";
+
+	// Write data
+	for (const auto& entry : pinData) {
+		file << entry.row << ","
+			<< entry.device << ","
+			<< entry.wireColor << ","
+			<< entry.signalType << ","
+			<< entry.direction << ","
+			<< entry.destination << "\n";
+	}
+
+	file.close();
+	cout << "Data saved to " << filename << " successfully!\n";
 }
 
 //and last, display the file. should be able to just reference the vector and get the passed through file name.
@@ -995,7 +1180,7 @@ void displayPinData(vector<PinMapping>& pinData, string filename) {
 	int choice;
 	do {
 
-		cout << "Select which File You Want to See \n";
+		cout << "\n Select which File You Want to See \n";
 		cout << "1. Engine Harness Pins\n";
 		cout << "2. Car Harness Pins \n";
 		cout << "3. ECU Pins\n";
