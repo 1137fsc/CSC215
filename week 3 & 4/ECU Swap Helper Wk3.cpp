@@ -908,8 +908,12 @@ void editPinData(vector<PinMapping>& pinData, string filename) {     //im using 
 void loadCSV(vector<PinMapping>& pinData, string filename) {
 	pinData.clear();
 	ifstream file(filename);                                      //this is how we read from the files, covered this in class. 
-	if (!file) return;  // If file doesn't exist, end without crashing. its a void so its not looking for a value to be returned. so just return... or be done with it if the file doesnt exist. 
-
+	//if (!file) return;  // If file doesn't exist, end without crashing. its a void so its not looking for a value to be returned. so just return... or be done with it if the file doesnt exist. 
+	//wont open the files, says its blank, need to know if its actually trying 
+	if (!file) {
+		cout << "ERROR cant open the file. the programmer is trying to finish this at 02:26 and has to be at work at 07:30 " << filename << endl;
+		return;
+	}
 	// okay so we got the file, now we gotta move the data in. 
 	//since this is a CSV, its delimated by commas. so comma?
 	// back to https://www.geeksforgeeks.org/csv-file-management-using-c/
@@ -939,9 +943,11 @@ display the details of the student and break from the loop.*/
 	while (getline(file, line)) {
 		stringstream ss(line);
 		PinMapping entry;
+		string temp;
 		//okay if the row is a string when I pull it in, how do I make it an int so we know what row this is?
 
-		getline(ss, line, ','); entry.row = stoi(line);   //ah ha!! https://www.geeksforgeeks.org/convert-string-to-int-in-cpp/?ref=ml_lbp
+		//bullshiiii doesnt work. it overwrites the whole thing getline(ss, line, ','); entry.row = stoi(line);   //ah ha!! https://www.geeksforgeeks.org/convert-string-to-int-in-cpp/?ref=ml_lbp
+		getline(ss, temp, ','); entry.row = stoi(line);
 		getline(ss, entry.device, ',');
 		getline(ss, entry.wireColor, ',');
 		getline(ss, entry.signalType, ',');
@@ -992,7 +998,7 @@ void displayPinData(vector<PinMapping>& pinData, string filename) {
 		cout << "Select which File You Want to See \n";
 		cout << "1. Engine Harness Pins\n";
 		cout << "2. Car Harness Pins \n";
-		cout << "3. ECM Haness Pins\n";
+		cout << "3. ECU Pins\n";
 		cout << "4. Exit \n";
 		cout << "Enter choice: ";
 
