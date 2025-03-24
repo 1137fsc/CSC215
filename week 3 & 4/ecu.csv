@@ -1,0 +1,49 @@
+row,device,wireColor,signalType,direction,destination
+1,Main Power Input,Black-A1,Switched 12V,Input,From vehicle fuse panel (5A)
+2,Power Ground,Black-A2,Ground,Input,To battery negative
+3,5V Sensor Reference,Black-A3,5V Ref,Output,TPS MAP IAT etc
+4,Not Used,Black-A4,,,
+5,Spare Digital In 2,Black-A5,Digital,Input,Spare digital
+6,CAN L,Black-A6,CAN,Both,CAN L line
+7,CAN H,Black-A7,CAN,Both,CAN H line
+8,Power Ground,Black-A8,Ground,Input,To battery negative
+9,Tacho Output,Black-B1,Square Wave,Output,To tachometer input
+10,Crank Sensor Positive,Black-B2,VR/Hall Signal,Input,From CKP+ (positive)
+11,Crank Sensor Negative,Black-B3,VR Negative,Input,"From CKP- (negative, VR only)"
+12,Cam Sensor Positive,Black-B4,VR/Hall Signal,Input,From CMP+ (positive)
+13,Cam Sensor Negative,Black-B5,VR Negative,Input,"From CMP- (negative, VR only)"
+14,Spare Digital Input 1,Black-B6,Digital,Input,VSS / Idle Up
+15,Clutch Input,Black-B7,Digital,Input,Grounded when clutch engaged
+16,Flex Fuel Sensor,Black-B8,Digital Frequency,Input,Signal from flex fuel sensor
+17,Analog Ground,Black-C1,Sensor Ground,Output,"Sensor ground for TPS, IAT, CLT"
+18,Analog Input 1,Black-C2,Analog 0-5V,Input,Fuel pressure / Oil temp etc
+19,Oil Pressure,Black-C3,Analog 0-5V,Input,Oil Pressure
+20,O2 Sensor,Black-C4,Analog 0-5V,Input,Wideband or narrowband signal
+21,Coolant Temp Sensor,Black-C5,Thermistor,Input,CLT sensor signal
+22,Inlet Air Temp Sensor,Black-C6,Thermistor,Input,IAT sensor signal
+23,Throttle Position Sensor,Black-C7,Analog 0-5V,Input,TPS signal
+24,External MAP Sensor Input,Black-C8,Analog 0-5V,Input,External MAP sensor signal
+25,Injector 1,Gray-A1,PWM Injector,Output,Fuel Injector 1
+26,Injector 2,Gray-A2,PWM Injector,Output,Fuel Injector 2
+27,Injector 3,Gray-A3,PWM Injector,Output,Fuel Injector 3
+28,Injector 4,Gray-A4,PWM Injector,Output,Fuel Injector 4
+29,Injector 5,Gray-A5,PWM Injector,Output,Fuel Injector 5
+30,Injector 6,Gray-A6,PWM Injector,Output,Fuel Injector 6
+31,Injector 7,Gray-A7,PWM Injector,Output,Fuel Injector 7
+32,Injector 8,Gray-A8,PWM Injector,Output,Fuel Injector 8
+33,Ignition 1,Gray-B1,Ignition,Output,Smart Coil 1
+34,Ignition 2,Gray-B2,Ignition,Output,Smart Coil 2
+35,Ignition 3,Gray-B3,Ignition,Output,Smart Coil 3
+36,Ignition 4,Gray-B4,Ignition,Output,Smart Coil 4
+37,Ignition 5,Gray-B5,Ignition,Output,Smart Coil 5
+38,Ignition 6,Gray-B6,Ignition,Output,Smart Coil 6
+39,Ignition 7,Gray-B7,Ignition,Output,Smart Coil 7
+40,Ignition 8,Gray-B8,Ignition,Output,Smart Coil 8
+41,Boost Control,Gray-C1,PWM,Output,Boost solenoid ground switching
+42,Fan Control,Gray-C2,PWM,Output,Fan relay
+43,Stepper B2,Gray-C3,Digital steps/dir,Output,Idle Air Control Valve
+44,Stepper B1,Gray-C4,Digital steps/dir,Output,Idle Air Control Valve
+45,Stepper A1,Gray-C5,Digital steps/dir,Output,Idle Air Control Valve
+46,Stepper A2,Gray-C6,Digital steps/dir,Output,Idle Air Control Valve
+47,Fuel Pump,Gray-C7,12v Power,Output,Fuel Pump Relay
+48,Power Ground,Gray-C8,Power Ground,Both,Batt Ground
